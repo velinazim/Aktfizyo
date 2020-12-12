@@ -47,7 +47,7 @@ router.post('/', function(req, res) {
                 const fullPath = "public/images/"+req.file.originalname;
 
                 const document = {
-                    image_path: fullPath,
+                    imagePath: fullPath,
                     searchText: req.file.originalname,
                     status: true
                 };
