@@ -5,8 +5,7 @@ const mongoosePaginate = require('mongoose-paginate-v2');
 const MovieSchema = new Schema({
     imagePath: String,
     searchText: String,
-    imageUrl: String,
-    status: Boolean,
+    status: Number,
 });
 
 MovieSchema.plugin(mongoosePaginate);

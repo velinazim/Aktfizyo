@@ -3,7 +3,6 @@ const router = express.Router();
 const Image = require('../models/Image');
 const multer = require('multer');
 const path   = require('path');
-const mongoosePaginate = require('mongoose-paginate-v2');
 
 /** Storage Engine */
 const storageEngine = multer.diskStorage({
@@ -37,7 +36,7 @@ const validateFile = function(file, cb ){
 
 const myCustomLabels = {
     totalDocs: 'totalItems',
-    docs: 'images',
+    docs: 'content',
     limit: 'pageSize',
     page: 'currentPage',
     totalPages: 'totalPages'
@@ -60,12 +59,12 @@ router.post('/', function(req, res) {
                 res.json({upload: 'tanımsız'});
 
             }else{
-                const fullPath = "/images/"+req.file.originalname;
+                const fullPath = req.file.originalname;
 
                 const document = {
                     imagePath: fullPath,
                     searchText: req.file.originalname,
-                    status: true
+                    status: 1
                 };
 
                 const photo = new Image(document);
@@ -127,10 +126,9 @@ router.put('/:image_id' ,(req,res,next) => {
     });
 });
 
-router.put('/delete/:image_id' ,(req,res,next) => {
-    const promise = Image.findByIdAndUpdate(
-        req.params.image_id,
-        {status: false}, {new: true}
+router.delete('/:image_id' ,(req,res,next) => {
+    const promise = Image.findByIdAndDelete(
+        req.params.image_id
     );
     promise.then((images) => {
         if(!images)
