@@ -3,6 +3,7 @@ const router = express.Router();
 const Image = require('../models/Image');
 const multer = require('multer');
 const path   = require('path');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 /** Storage Engine */
 const storageEngine = multer.diskStorage({
@@ -34,6 +35,21 @@ const validateFile = function(file, cb ){
     }
 }
 
+const myCustomLabels = {
+    totalDocs: 'totalItems',
+    docs: 'images',
+    limit: 'pageSize',
+    page: 'currentPage',
+    totalPages: 'totalPages'
+};
+
+const getPagination = (page, size) => {
+    const limit = size ? +size : 3;
+    const offset = page ? page * limit : 0;
+
+    return { limit, offset };
+};
+
 router.post('/', function(req, res) {
     upload(req, res,(error) => {
         if(error){
@@ -44,7 +60,7 @@ router.post('/', function(req, res) {
                 res.json({upload: 'tanımsız'});
 
             }else{
-                const fullPath = "public/images/"+req.file.originalname;
+                const fullPath = "/images/"+req.file.originalname;
 
                 const document = {
                     imagePath: fullPath,
@@ -62,6 +78,18 @@ router.post('/', function(req, res) {
             }
         }
     });
+});
+
+router.get('/pagination',(req,res,next) =>{
+    const { page, size } = req.query;
+    const { limit, offset } = getPagination(page, size);
+    Image.paginate({},{ offset, limit, customLabels: myCustomLabels}, (err, result) => {
+        if (err) {
+            console.err(err);
+        } else {
+            res.json(result);
+        }
+    })
 });
 
 router.get('/' ,(req,res,next) => {
