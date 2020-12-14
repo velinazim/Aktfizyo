@@ -3,6 +3,33 @@ const router = express.Router();
 const Category = require('../models/Category');
 
 
+const myCustomLabels = {
+    totalDocs: 'totalItems',
+    docs: 'content',
+    limit: 'pageSize',
+    page: 'currentPage',
+    totalPages: 'totalPages'
+};
+
+const getPagination = (page, size) => {
+    const limit = size ? +size : 3;
+    const offset = page ? page * limit : 0;
+
+    return { limit, offset };
+};
+router.get('/pagination',(req,res,next) =>{
+    const { page, size } = req.query;
+    const { limit, offset } = getPagination(page, size);
+    Category.paginate({},{ offset, limit, customLabels: myCustomLabels}, (err, result) => {
+        if (err) {
+            console.err(err);
+        } else {
+            res.json(result);
+        }
+    })
+
+});
+
 router.get('/', (req,res) => {
     const promise = Category.aggregate([
         {

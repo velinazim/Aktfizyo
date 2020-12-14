@@ -16,7 +16,7 @@ const storageEngine = multer.diskStorage({
 
 const upload =  multer({
     storage: storageEngine,
-    limits: { fileSize:200000 },
+    limits: { fileSize:200000000 },
     fileFilter: function(req, file, callback){
         validateFile(file, callback);
     }
@@ -49,10 +49,10 @@ const getPagination = (page, size) => {
     return { limit, offset };
 };
 
-router.post('/', function(req, res) {
+router.post('/', (req, res) => {
     upload(req, res,(error) => {
         if(error){
-            res.json({upload: 'dosyanın ebatı bütük'});
+            res.json({upload: 'dosyanın ebatı büyük'});
         }else{
             if(req.file === undefined){
 
